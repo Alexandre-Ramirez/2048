@@ -26,6 +26,56 @@ def display():
             # creation without placement
             labels[line][col].config (text=gameplate[line][col], bg=dico_color[gameplate[line][col]])
 
+def pack_4(a,b,c,d,nm):
+    nm = 0
+    if c == 0 and d>0:
+        c,d = d,0
+        nm += 1
+
+    if b == 0 and c>0:
+        b,c,d = c,d,0
+        nm += 1
+
+    if a == 0 and b>0:
+        a,b,c,d = b,c,d,0
+        nm += 1
+
+    if a == b and a>0:
+        a = 2*a
+        nm += 1
+        b = c
+        c = d
+        d = 0
+
+    if b == c and b>0:
+        b = 2*b
+        nm += 1
+        c = d
+        d = 0
+
+    if c == d and c>0:
+        c = 2*c
+        nm += 1
+        d = 0
+
+    return a,b,c,d,nm
+
+
+"""
+    if a == b :
+        a = 2*a,b,c,0
+
+    if b == c :
+        b = 2*b,c,0
+
+    if c == d :
+        c = 2*c,0
+"""
+
+
+
+
+
 # Dico color
 dico_color = { " " : "#000000",
                2 : "#FFFFFF",
@@ -96,6 +146,9 @@ for line in range(len(gameplate)):
                                   font=("Arial", 15))
         # label positionning in the windows
         labels[line][col].place(x=x0 + width * col, y=y0 + height * line)
+
+print (pack_4(2,0,0,2,0))
+
 
 display()
 
