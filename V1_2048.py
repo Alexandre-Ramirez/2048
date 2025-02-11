@@ -19,6 +19,8 @@ Purpose : Programme jeux 2048.
 """
 from tkinter import *
 
+
+
 #labels creation and position (1. Creation 2. position)
 def display():
     for line in range(len(gameplate)):
@@ -26,7 +28,7 @@ def display():
             # creation without placement
             labels[line][col].config (text=gameplate[line][col], bg=dico_color[gameplate[line][col]])
 
-def pack_4(a,b,c,d,nm):
+def pack_4(a,b,c,d):
     nm = 0
     if c == 0 and d>0:
         c,d = d,0
@@ -60,24 +62,67 @@ def pack_4(a,b,c,d,nm):
 
     return a,b,c,d,nm
 
+def key_press(event):
+    touche = event.keysym  # récupérer le symbole de la touche
+    if touche == "Right" or touche == "d" or touche == "D":
+        move_right()
+    if touche == "Left" or touche == "a" or touche == "A":
+        move_left()
+    if touche == "Up" or touche == "w" or touche == "W":
+        move_up()
+    if touche == "Down" or touche == "s" or touche == "S":
+        move_down()
 
-"""
-    if a == b :
-        a = 2*a,b,c,0
+    display()
 
-    if b == c :
-        b = 2*b,c,0
+def move_right():
+    tot_move = 0
+    gameplate[0][3],gameplate[0][2],gameplate[0][1],gameplate[0][0],nm = pack_4(gameplate[0][3],gameplate[0][2],gameplate[0][1],gameplate[0][0])
+    tot_move += nm
+    gameplate[1][3],gameplate[1][2],gameplate[1][1],gameplate[1][0],nm = pack_4(gameplate[1][3],gameplate[1][2],gameplate[1][1],gameplate[1][0])
+    tot_move += nm
+    gameplate[2][3],gameplate[2][2],gameplate[2][1],gameplate[2][0],nm = pack_4(gameplate[2][3],gameplate[2][2],gameplate[2][1],gameplate[2][0])
+    tot_move += nm
+    gameplate[3][3],gameplate[3][2],gameplate[3][1],gameplate[3][0],nm = pack_4(gameplate[3][3],gameplate[3][2],gameplate[3][1],gameplate[3][0])
+    tot_move += nm
 
-    if c == d :
-        c = 2*c,0
-"""
+def move_left():
+    tot_move = 0
+    gameplate[0][0],gameplate[0][1],gameplate[0][2],gameplate[0][3],nm = pack_4(gameplate[0][0],gameplate[0][1],gameplate[0][2],gameplate[0][3])
+    tot_move += nm
+    gameplate[1][0],gameplate[1][1],gameplate[1][2],gameplate[1][3],nm = pack_4(gameplate[1][0],gameplate[1][1],gameplate[1][2],gameplate[1][3])
+    tot_move += nm
+    gameplate[2][0],gameplate[2][1],gameplate[2][2],gameplate[2][3],nm = pack_4(gameplate[2][0],gameplate[2][1],gameplate[2][2],gameplate[2][3])
+    tot_move += nm
+    gameplate[3][0],gameplate[3][1],gameplate[3][2],gameplate[3][3],nm = pack_4(gameplate[3][0],gameplate[3][1],gameplate[3][2],gameplate[3][3])
+    tot_move += nm
 
+def move_up():
+    tot_move = 0
+    gameplate[0][0],gameplate[1][0],gameplate[2][0],gameplate[3][0],nm = pack_4(gameplate[0][0],gameplate[1][0],gameplate[2][0],gameplate[3][0])
+    tot_move += nm
+    gameplate[0][1], gameplate[1][1], gameplate[2][1], gameplate[3][1],nm = pack_4(gameplate[0][1], gameplate[1][1], gameplate[2][1], gameplate[3][1])
+    tot_move += nm
+    gameplate[0][2], gameplate[1][2], gameplate[2][2], gameplate[3][2],nm = pack_4(gameplate[0][2], gameplate[1][2], gameplate[2][2], gameplate[3][2])
+    tot_move += nm
+    gameplate[0][3], gameplate[1][3], gameplate[2][3], gameplate[3][3],nm = pack_4(gameplate[0][3], gameplate[1][3], gameplate[2][3], gameplate[3][3])
+    tot_move += nm
 
-
+def move_down():
+    tot_move = 0
+    gameplate[3][0],gameplate[2][0],gameplate[1][0],gameplate[0][0],nm = pack_4(gameplate[3][0],gameplate[2][0],gameplate[1][0],gameplate[0][0])
+    tot_move += nm
+    gameplate[3][1], gameplate[2][1], gameplate[1][1], gameplate[0][1],nm = pack_4(gameplate[3][1], gameplate[2][1], gameplate[1][1], gameplate[0][1])
+    tot_move += nm
+    gameplate[3][2], gameplate[2][2], gameplate[1][2], gameplate[0][2],nm = pack_4(gameplate[3][2], gameplate[2][2], gameplate[1][2], gameplate[0][2])
+    tot_move += nm
+    gameplate[3][3], gameplate[2][3], gameplate[1][3], gameplate[0][3],nm = pack_4(gameplate[3][3], gameplate[2][3], gameplate[1][3], gameplate[0][3])
+    tot_move += nm
 
 
 # Dico color
 dico_color = { " " : "#000000",
+               0 : "#000000",
                2 : "#FFFFFF",
                4 : "#F9F5F0",
                8 : "#F2EBE1",
@@ -102,13 +147,16 @@ gameplate = [[2," ",4," "],
 """
 
 # Gameplay avec toutes les valeurs
-gameplate = [[2,4,8,16],
-             [32,64,128,256],
-             [512,1024,2048,4096],
-             [8192," "," "," "]]
+gameplate = [[2,2,0,0],
+             [2,2,2,0],
+             [0,0,2,0],
+             [0,0,2,2]]
 
 # 2 dimensions list (empty, with labels in the future)
-labels= [[None,None,None,None],[None,None,None,None],[None,None,None,None],[None,None,None,None],]
+labels= [[None,None,None,None],
+         [None,None,None,None],
+         [None,None,None,None],
+         [None,None,None,None],]
 
 x0=220 # horizontal beginning of labels
 y0=100 # vertical beginning of labels
@@ -147,9 +195,7 @@ for line in range(len(gameplate)):
         # label positionning in the windows
         labels[line][col].place(x=x0 + width * col, y=y0 + height * line)
 
-print (pack_4(2,0,0,2,0))
-
 
 display()
-
+win.bind('<Key>', key_press) #on traite les touches clavier
 win.mainloop()
