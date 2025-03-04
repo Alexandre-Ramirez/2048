@@ -6,19 +6,22 @@
 """
 Name    : 2048_project
 Author  : Alexandre Ramirez
-Date    : 2025.21.01
-Version : 0.01
+Date    : 2025.04.03
+Version : 1.0
 Purpose : Programme jeux 2048.
 
 # ------------------------------------------------------------------------------
-# Projet
+# Projet 2048
 # ------------------------------------------------------------------------------
 
 # 2025-21-01 01 ARZ
   - Version initiale
 """
+import os
+import sys
 from tkinter import *
-
+import random
+from tkinter import messagebox
 
 
 #labels creation and position (1. Creation 2. position)
@@ -27,6 +30,10 @@ def display():
         for col in range(len(gameplate[line])):
             # creation without placement
             labels[line][col].config (text=gameplate[line][col], bg=dico_color[gameplate[line][col]])
+
+"""----------------------------------------------------------------------------------------------
+GAMEPLAY FUNTIONS AND RULES 
+-----------------------------------------------------------------------------------------------"""
 
 def pack_4(a,b,c,d):
     nm = 0
@@ -62,18 +69,22 @@ def pack_4(a,b,c,d):
 
     return a,b,c,d,nm
 
+
 def key_press(event):
     touche = event.keysym  # récupérer le symbole de la touche
     if touche == "Right" or touche == "d" or touche == "D":
-        move_right()
+        move_right() != 0
     if touche == "Left" or touche == "a" or touche == "A":
-        move_left()
+        move_left() != 0
     if touche == "Up" or touche == "w" or touche == "W":
-        move_up()
+        move_up() != 0
     if touche == "Down" or touche == "s" or touche == "S":
-        move_down()
+        move_down() != 0
 
+    random_number()
     display()
+    check_win()
+    check_defeat()
 
 def move_right():
     tot_move = 0
@@ -85,6 +96,7 @@ def move_right():
     tot_move += nm
     gameplate[3][3],gameplate[3][2],gameplate[3][1],gameplate[3][0],nm = pack_4(gameplate[3][3],gameplate[3][2],gameplate[3][1],gameplate[3][0])
     tot_move += nm
+    return tot_move
 
 def move_left():
     tot_move = 0
@@ -96,6 +108,7 @@ def move_left():
     tot_move += nm
     gameplate[3][0],gameplate[3][1],gameplate[3][2],gameplate[3][3],nm = pack_4(gameplate[3][0],gameplate[3][1],gameplate[3][2],gameplate[3][3])
     tot_move += nm
+    return tot_move
 
 def move_up():
     tot_move = 0
@@ -107,6 +120,7 @@ def move_up():
     tot_move += nm
     gameplate[0][3], gameplate[1][3], gameplate[2][3], gameplate[3][3],nm = pack_4(gameplate[0][3], gameplate[1][3], gameplate[2][3], gameplate[3][3])
     tot_move += nm
+    return tot_move
 
 def move_down():
     tot_move = 0
@@ -118,7 +132,91 @@ def move_down():
     tot_move += nm
     gameplate[3][3], gameplate[2][3], gameplate[1][3], gameplate[0][3],nm = pack_4(gameplate[3][3], gameplate[2][3], gameplate[1][3], gameplate[0][3])
     tot_move += nm
+    return tot_move
 
+#function to add a random 2 or for in an empty case in gameplate
+def random_number():
+    global gameplate
+    empty_list = []
+    for line in range(len(gameplate)) :
+        for col in range(len(gameplate[line])) :
+            if gameplate[line][col] == 0 :
+                empty_list.append([line,col])   #creating a list with all the empty cases in gameplate
+
+    number_spawn = [2,2,2,2,4]
+    n = random.choice(number_spawn)
+    if len(empty_list) > 0 :
+        empty_tile = random.choice(empty_list)
+        gameplate[empty_tile[0]][empty_tile[1]] = n  #adding a 2 or 4 in an empty case
+
+
+"""----------------------------------------------------------------------------------------------
+CONDITIONS IF VICTORY OR DEFEAT 
+-----------------------------------------------------------------------------------------------"""
+
+def check_defeat(found = False) :
+    if 0 not in [element for ligne in gameplate for element in ligne] :
+        if check_merge() == False :
+            loose_window()
+
+def check_merge() :
+    for ligne in range(4) :
+        for col in range(3) :
+            if gameplate[ligne][col] == gameplate[ligne][col+1]:
+                return True
+
+    for col in range(4) :
+        for ligne in range(3) :
+            if gameplate[ligne][col] == gameplate[ligne+1][col] :
+                return True
+    return False
+
+def check_win() :
+    if 2048 in [element for ligne in gameplate for element in ligne] :
+        global status
+        status += 1
+        if status == 1 :
+            open_window()
+
+def loose_window() :
+    messagebox.showinfo("LOOSE WINDOW", "YOU LOST")
+    open_window()
+
+""" Prochain sprint
+def redemarrer_programme() :
+    python = sys.executable
+    os.execv(python, [python] + sys.argv)
+"""
+
+def open_window() :
+    # Creating the tkinter window
+    root = Tk()
+    root.geometry('200x250')
+    label = Label(root, text="OPTION")
+    label.pack()
+
+    # Creating and configuring the "stop" or "quit game" button
+    button_stop = Button(root, text="Quit game", command=quit)
+    button_stop.pack(pady=25)
+
+    # Creating and configuring the "continue" button
+    button_continue = Button(root, text="Continue game", command= root.destroy)
+    button_continue.pack(pady=25)
+
+    # Creating and configuring the "begin a new game" button (endroit à placer le bouton)
+
+    root.mainloop()
+
+""" Prochain sprint
+    # Creating and configuring the "begin a new game" button
+    button_redo = Button(root, text="Begin a new game", command= redemarrer_programme )
+    button_redo.pack(pady=25)
+"""
+
+
+"""----------------------------------------------------------------------------------------------
+GAME VISUAL 
+-----------------------------------------------------------------------------------------------"""
 
 # Dico color
 dico_color = { " " : "#000000",
@@ -138,20 +236,28 @@ dico_color = { " " : "#000000",
                8192 : "#604C33",
                }
 
-# 2 dimensions list with data
 """
-gameplate = [[2," ",4," "],
-             [" "," "," "," "],
-             [" ",2," ",8],
-             [" "," "," ",16]]
+# 2 dimensions list with data to win
+gameplate = [[1024,1024,4,0],
+             [1024,0,0,0],
+             [1024,2,0,8],
+             [0,0,0,16]]
 """
 
-# Gameplay avec toutes les valeurs
-gameplate = [[2,2,0,0],
-             [2,2,2,0],
-             [0,0,2,0],
-             [0,0,2,2]]
+# 2 dimension list with data to lose
+gameplate = [[16,8,4,2],
+             [2,4,8,16],
+             [16,8,512,64],
+             [64,0,0,0]]
 
+
+"""
+# Gameplay avec toutes les valeurs initiales
+gameplate = [[0,0,0,0],
+             [0,0,0,0],
+             [0,0,0,0],
+             [0,0,0,0]]
+"""
 # 2 dimensions list (empty, with labels in the future)
 labels= [[None,None,None,None],
          [None,None,None,None],
@@ -196,6 +302,13 @@ for line in range(len(gameplate)):
         labels[line][col].place(x=x0 + width * col, y=y0 + height * line)
 
 
+"""----------------------------------------------------------------------------------------------
+GAME RUN
+-----------------------------------------------------------------------------------------------"""
+
+random_number()
+random_number()
 display()
+status = 0
 win.bind('<Key>', key_press) #on traite les touches clavier
 win.mainloop()
